@@ -1675,7 +1675,13 @@ local function makeMovable(name)
   for i = 1, #handles do
     local h = handles[i]
     if type(h) == "table" and h.HookScript then
-      if h ~= f and h.EnableMouse then h:EnableMouse(true) end
+      if h ~= f and h.EnableMouse then
+        h:EnableMouse(true)
+        -- 6.2.9 (Discord Nigel 14.11.: Leatrix Plus' Wowhead link at the top of the map could no longer be copied): the
+        -- title bar now takes the mouse, so hovering stays on it and never reaches what other addons put beneath it.
+        -- Passing the hover on lets their text boxes get the mouse again; clicks (dragging) stay with the title bar.
+        if h.SetPropagateMouseMotion then pcall(h.SetPropagateMouseMotion, h, true) end
+      end
       h:HookScript("OnMouseDown", down); h:HookScript("OnMouseUp", up)
     end
   end

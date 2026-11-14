@@ -313,7 +313,7 @@ FLT.PROFESSION_TRAINERS = {
     {257024,"Mendalass Tattermend","Skinner","AH",2521,43.3,43.4,"Zephras Isle"},
   },
 }
--- Rank books / quests: [npcID] = { npcID, name, title, friendly to, uiMapID, x, y, zone }
+-- Rank books / quests (+ NPCs who teach Forever recipes, 6.2.9): [npcID] = { npcID, name, title, friendly to, uiMapID, x, y, zone }
 FLT.PROFESSION_RANK_NPCS = {
   [2805]={2805,"Deneb Walker","Scrolls & Potions","A",1417,27.0,58.8,"Arathi Highlands"},
   [3955]={3955,"Shandrina","Trade Goods","A",1440,49.5,67.1,"Ashenvale"},
@@ -322,4 +322,6 @@ FLT.PROFESSION_RANK_NPCS = {
   [8125]={8125,"Dirge Quikcleave","Butcher","AH",1446,52.6,28.1,"Tanaris"},
   [12920]={12920,"Doctor Gregory Victor","Trauma Surgeon","H",1417,73.4,36.9,"Arathi Highlands"},
   [12939]={12939,"Doctor Gustaf VanHowzen","Trauma Surgeon","A",1445,67.8,49.0,"Dustwallow Marsh"},
+  [249713]={249713,"Odd Child","","AH",1436,42.8,72.8,"Westfall"},
+  [1937]={1937,"Apothecary Renferrel","Royal Apothecary Society","H",1421,42.8,40.9,"Silverpine Forest"},
 }

@@ -47,6 +47,9 @@ end
 
 local function costsDB(token)
   if type(OneForAllDB) ~= "table" or not token then return {} end
+  -- 6.2.9 (Discord 14.11., druids: "Swipe Rank 1 at level 54"): 6.2.8 saved the level and fee of a spell's highest rank
+  -- under its rank 1 (see serviceSpellID); those values are dropped once and read again at the next trainer visit
+  if (OneForAllDB.trainerCostsV or 1) < 2 then OneForAllDB.trainerCosts = nil; OneForAllDB.trainerCostsV = 2 end
   OneForAllDB.trainerCosts = OneForAllDB.trainerCosts or {}
   OneForAllDB.trainerCosts[token] = OneForAllDB.trainerCosts[token] or {}
   return OneForAllDB.trainerCosts[token]
@@ -87,9 +90,13 @@ end
 -- spell ID is read once per trainer visit (keyed by name and rank text; wiped when the trainer opens / closes)
 local scanTip
 local idCache = {}
+-- 6.2.9: the key also holds the level and the fee - the Forever client gives no rank text, so name and rank text alone
+-- were the same for every rank and all ranks got the first rank's spell ID (Discord 14.11.: Swipe Rank 1 listed at 54)
 local function serviceSpellID(i)
   local name, sub = GetTrainerServiceInfo(i)
-  local key = name and (name .. "|" .. tostring(sub))
+  local lvl = GetTrainerServiceLevelReq and GetTrainerServiceLevelReq(i)
+  local cost = GetTrainerServiceCost and GetTrainerServiceCost(i)
+  local key = name and (name .. "|" .. tostring(sub) .. "|" .. tostring(lvl) .. "|" .. tostring(cost))
   if key and idCache[key] ~= nil then return idCache[key] or nil end
   if not scanTip then
     scanTip = CreateFrame("GameTooltip", "OneForAllTrainerScanTip", nil, "GameTooltipTemplate")

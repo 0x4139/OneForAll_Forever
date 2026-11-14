@@ -71,6 +71,17 @@ and add the file to OneForAll.toc before UI\MainFrame.lua.
 Changelog (newest first)
 ========================
 
+6.2.9 - Trainer window, map and Skill-Up fixes
+==============================================
+- Class trainer window: rank 1 of many spells (Swipe, Faerie Fire, Rake, Shred, Thorns ...) was listed at the level and
+  with the fee of the highest rank, and lower ranks seemed to be missing (since 6.2.8; Discord). Every rank keeps its own
+  level and fee again; the fees saved by 6.2.8 are dropped once and read again at the next trainer visit.
+- Move Blizzard windows: other addons' text at the top of the map (Leatrix Plus' Wowhead link) can be hovered and copied
+  again; dragging the map by its title bar still works (Discord).
+- Skill-Up guide: Forever's own recipes are only planned when it is known who teaches them, or a trainer offered them
+  to you. The Discolored Healing Potions point to the Odd Child (Westfall) / Apothecary Renferrel (Silverpine Forest)
+  instead of your alchemy trainer, who does not teach them (Discord).
+
 6.2.8 - Dungeon quest chains and rewards, Brazilian Portuguese
 ==============================================================
 - Dungeon quests: every dungeon quest checked against QuestieDB and Wowhead Forever. 48 missing quest chains and

@@ -2107,7 +2107,8 @@ end
 -- Auctionator's "Auction" line, the lines in between move one down (text, colours, right side)
 do
   local LABELS = { Auction = true, Auktion = true, ["Enchères"] = true, Subasta = true }
-  local function plain(t) return type(t) == "string" and t:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):match("^%s*(.-)%s*$") or nil end
+  -- a secret string is still type "string": readable() has to be asked before it is indexed
+  local function plain(t) return type(t) == "string" and readable(t) and t:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):match("^%s*(.-)%s*$") or nil end
   function QoL.MoveUnderAuction(tt)
     local name = tt and tt.GetName and tt:GetName()
     local n = name and tt.NumLines and tt:NumLines()
@@ -2123,7 +2124,9 @@ do
     if not at or at >= n - 1 then return end -- not there, or ours is right under it already
     local function get(i)
       local l, r = _G[name .. "TextLeft" .. i], _G[name .. "TextRight" .. i]
-      return { l:GetText(), { l:GetTextColor() }, r and r:GetText(), r and { r:GetTextColor() }, r and r:IsShown() }
+      local lt, rt = l:GetText(), r and r:GetText()
+      if not readable(lt, rt) then return nil end -- kept secret by the client: nothing to move
+      return { lt, { l:GetTextColor() }, rt, r and { r:GetTextColor() }, r and r:IsShown() }
     end
     local function put(i, d)
       local l, r = _G[name .. "TextLeft" .. i], _G[name .. "TextRight" .. i]
@@ -2131,7 +2134,14 @@ do
       if r then r:SetText(d[3]); if d[4] then r:SetTextColor(unpack(d[4])) end; r:SetShown(d[5] and true or false) end
     end
     local mine = get(n)
-    for i = n, at + 2, -1 do put(i, get(i - 1)) end
+    if not mine then return end
+    local rows = {} -- read every line first: a secret one further up must not leave the shuffle half done
+    for i = n, at + 2, -1 do
+      local d = get(i - 1)
+      if not d then return end
+      rows[i] = d
+    end
+    for i = n, at + 2, -1 do put(i, rows[i]) end
     put(at + 1, mine)
     tt:Show() -- lay the lines out again
   end
@@ -2260,6 +2270,7 @@ SHORT.de = { -- (fields of SHORT: QoL.lua is at the 200 locals limit)
 SHORT.equip, SHORT.ench, SHORT.list = "^Equip: ", "^Enchanted: ", SHORT
 if GetLocale and GetLocale() == "deDE" then SHORT.equip, SHORT.list = "^Anlegen: ", SHORT.de end
 local function shortStat(text)
+  if type(text) ~= "string" or not readable(text) then return end
   local body = text:match(SHORT.equip .. "(.+)$")
   if body then
     local list = SHORT.list
@@ -2281,7 +2292,7 @@ local function shortenTooltip(tt)
   for i = 2, tt:NumLines() do
     local line = _G[name .. "TextLeft" .. i]
     local text = line and line:GetText()
-    if text and (text:find(SHORT.equip) or text:find(SHORT.ench)) then
+    if text and readable(text) and (text:find(SHORT.equip) or text:find(SHORT.ench)) then
       local out = shortStat(text)
       if out then line:SetText(out); changed = true end
     end
